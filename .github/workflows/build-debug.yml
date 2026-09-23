@@ -1,0 +1,36 @@
+name: Build Debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: تحميل المشروع
+        uses: actions/checkout@v4
+
+      - name: إعداد Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: إعطاء صلاحية لـ Gradle
+        run: chmod +x ./gradlew
+
+      - name: بناء Debug بدون R8
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: رفع APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: telegram-x-debug-apk
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: error
