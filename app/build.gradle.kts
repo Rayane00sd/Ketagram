@@ -278,6 +278,17 @@ val buildNativeTasks = mutableMapOf<String, TaskProvider<*>>()
 android {
   namespace = "org.thunderdog.challegram"
 
+  buildTypes {
+    debug {
+      isMinifyEnabled = false
+      isShrinkResources = false
+    }
+    release {
+      isMinifyEnabled = false
+      isShrinkResources = false
+    }
+  }
+
   lint {
     disable += arrayOf(
       "MissingTranslation",
@@ -391,22 +402,22 @@ android {
     buildConfigLong("COMMIT_DATE", tgxGit.commitDate)
     buildConfigString("SOURCES_URL", sourcesUrl)
 
-    buildConfigField("long[]", "PULL_REQUEST_ID", "{${
+    buildConfigField("long[]", "PULL_REQUEST_ID", "{{
       config.pullRequests.joinToString(", ") { it.id.toString() }
     }}")
-    buildConfigField("long[]", "PULL_REQUEST_COMMIT_DATE", "{${
+    buildConfigField("long[]", "PULL_REQUEST_COMMIT_DATE", "{{
       config.pullRequests.joinToString(", ") { it.commitDate.toString() }
     }}")
-    buildConfigField("String[]", "PULL_REQUEST_COMMIT", "{${
+    buildConfigField("String[]", "PULL_REQUEST_COMMIT", "{{
       config.pullRequests.joinToString(", ") { "\"${it.commitShort}\"" }
     }}")
-    buildConfigField("String[]", "PULL_REQUEST_COMMIT_FULL", "{${
+    buildConfigField("String[]", "PULL_REQUEST_COMMIT_FULL", "{{
       config.pullRequests.joinToString(", ") { "\"${it.commitLong}\"" }
     }}")
-    buildConfigField("String[]", "PULL_REQUEST_URL", "{${
+    buildConfigField("String[]", "PULL_REQUEST_URL", "{{
       config.pullRequests.joinToString(", ") { "\"${tgxGit.remoteUrl}/pull/${it.id}/files/${it.commitLong}\"" }
     }}")
-    buildConfigField("String[]", "PULL_REQUEST_AUTHOR", "{${
+    buildConfigField("String[]", "PULL_REQUEST_AUTHOR", "{{
       config.pullRequests.joinToString(", ") { "\"${it.author}\"" }
     }}")
 
@@ -769,7 +780,7 @@ android {
         val modifiedVersionName = "$baseVersionName.$baseVersionCode$flavorVersionNameSuffix"
         output.versionName.set(modifiedVersionName)
 
-        fileName = "${config.outputFileNamePrefix}-${modifiedVersionName.replace(Regex("-universal(?=-|$)"), "")}"
+        fileName = "${config.outputFileNamePrefix}-${modifiedVersionName.replace(Regex("-universal(?=-|$)"), "") }"
         if (output is VariantOutputImpl) {
           output.outputFileName.set("$fileName.apk")
         }
@@ -998,105 +1009,3 @@ dependencies {
   )
   flavorImplementation(
     libs.google.mlkit.language.id.legacy,
-    libs.google.mlkit.language.id.latest
-  )
-  // Firebase: https://firebase.google.com/support/release-notes/android
-  flavorImplementation(
-    libs.google.firebase.messaging.legacy,
-    libs.google.firebase.messaging.lollipop,
-    libs.google.firebase.messaging.latest
-  ) {
-    exclude(group = "com.google.firebase", module = "firebase-core")
-    exclude(group = "com.google.firebase", module = "firebase-analytics")
-    exclude(group = "com.google.firebase", module = "firebase-measurement-connector")
-  }
-  // Play Integrity: https://developer.android.com/google/play/integrity/reference/com/google/android/play/core/release-notes
-  flavorImplementation(
-    libs.google.play.integrity.legacy,
-    libs.google.play.integrity.lollipop,
-    libs.google.play.integrity.latest
-  )
-  // ReCaptcha: https://cloud.google.com/recaptcha/docs/release-notes
-  flavorImplementation(
-    libs.google.recaptcha.legacy,
-    libs.google.recaptcha.lollipop,
-    libs.google.recaptcha.marshmallow,
-    libs.google.recaptcha.latest
-  )
-  // AndroidX/media: https://github.com/androidx/media/blob/release/RELEASENOTES.md
-  flavorImplementation(
-    libs.androidx.media.common.legacy,
-    libs.androidx.media.common.lollipop,
-    libs.androidx.media.common.latest
-  )
-  flavorImplementation(
-    libs.androidx.media.transformer.legacy,
-    libs.androidx.media.transformer.lollipop,
-    libs.androidx.media.transformer.latest
-  )
-  flavorImplementation(
-    libs.androidx.media.effect.legacy,
-    libs.androidx.media.effect.lollipop,
-    libs.androidx.media.effect.latest
-  )
-  flavorImplementation(
-    libs.androidx.media.exoplayer.legacy,
-    libs.androidx.media.exoplayer.lollipop,
-    libs.androidx.media.exoplayer.latest
-  )
-  flavorImplementation(
-    libs.androidx.media.exoplayer.hls.legacy,
-    libs.androidx.media.exoplayer.hls.lollipop,
-    libs.androidx.media.exoplayer.hls.latest
-  )
-  sinceMarshmallowImplementation(libs.androidx.media.inspector.latest)
-  // Play In-App Updates: https://developer.android.com/reference/com/google/android/play/core/release-notes-in_app_updates
-  implementation(libs.google.play.app.update)
-  // Play Billing: https://developer.android.com/google/play/billing/release-notes
-  sinceLollipopImplementation(
-    libs.google.play.billing.lollipop,
-    libs.google.play.billing.latest
-  )
-  // The Checker Framework: https://checkerframework.org/CHANGELOG.md
-  compileOnly(libs.annotations.checkerframework)
-  // OkHttp: https://github.com/square/okhttp/blob/master/CHANGELOG.md
-  flavorImplementation(
-    libs.okhttp.legacy,
-    libs.okhttp.latest
-  )
-  // ShortcutBadger: https://github.com/leolin310148/ShortcutBadger
-  implementation(libs.shortcutbadger) {
-    artifact { type = "aar" }
-  }
-  // ReLinker: https://github.com/KeepSafe/ReLinker/blob/master/CHANGELOG.md
-  preMarshmallowImplementation(libs.relinker)
-  // Konfetti: https://github.com/DanielMartinus/Konfetti/blob/main/README.md
-  implementation(libs.konfetti)
-  // Transcoder: https://github.com/natario1/Transcoder/blob/master/docs/_about/changelog.md
-  legacyImplementation(libs.transcoder)
-  // https://github.com/mikereedell/sunrisesunsetlib-java
-  implementation(libs.sunriseSunsetCalculator)
-
-  // ZXing: https://github.com/zxing/zxing/blob/master/CHANGES
-  implementation(libs.google.zxing.core)
-
-  // subsampling-scale-image-view: https://github.com/davemorrissey/subsampling-scale-image-view
-  implementation(libs.subsamplingScaleImageView)
-
-  // mp4parser: https://github.com/sannies/mp4parser/releases
-  implementation(libs.mp4parser.isoparser)
-
-  // Compiler warnings
-  compileOnly(libs.annotations.errorprone)
-  compileOnly(libs.annotations.j2objc)
-  compileOnly(libs.androidx.room.latest)
-  compileOnly(libs.annotations.jsr305)
-  compileOnly(libs.annotations.kotlin)
-}
-
-if (!config.isExperimentalBuild) {
-  apply(plugin = libs.plugins.google.services.get().pluginId)
-  if (config.isHuaweiBuild) {
-    apply(plugin = libs.huawei.agconnect.get().group)
-  }
-}
